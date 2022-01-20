@@ -9,9 +9,9 @@ def start_game():
     unusable = set()
     for i in range(6):
         guess = input(f"GUESS {i+1}:\nGuess a 5-letter word:\n\n").lower().strip()
-        if len(guess) != 5 or not wd.is_guessable(guess):
-            print("\nInvalid guess.\n")
-            continue
+        while len(guess) != 5 or not wd.is_guessable(guess):
+            print("\nInvalid guess.")
+            guess = input(f"Guess a 5-letter word:\n\n").lower().strip()
         hints = wd.validate_guess(guess, w)
         for i, hint in enumerate(hints):
             print(hint.value, end="")
@@ -23,6 +23,7 @@ def start_game():
             print("\n")
         print(f"Cannot use: {unusable}\n")
         if guess == w:
+            print(f"Congratulations! The word was: '{w}'\n")
             break
     else:
         print(f"Game over! The word was: '{w}'\n")

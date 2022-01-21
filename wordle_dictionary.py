@@ -22,25 +22,36 @@ class Hint(Enum):
     GREEN = "g"
 
 
-def is_guessable(word: str) -> bool:
-    """Check whether a word can be guessed."""
-    
-    for word_file in WORD_FILES:
-        with open(word_file, "r") as f:
-            for line in f.readlines():
-                if word == line.strip():
-                    return True
-    return False
-
-
-def get_word() -> str:
-    """Get a 5 letter word for the game."""
+def get_presentables() -> List[str]:
+    """Return the list of all words that can be presented."""
 
     words = []
     with open(FILE_PRESENTABLE, "r") as f:
         for line in f.readlines():
             words.append(line.strip())
-    return choice(words)
+    return words
+
+
+def get_guessables() -> List[str]:
+    """Return the list of all guessable words."""
+
+    words = get_presentables()  # Presentable words can also be guessed
+    with open(FILE_GUESSABLE, "r") as f:
+        for line in f.readlines():
+            words.append(line.strip())
+    return words
+
+
+def is_guessable(word: str) -> bool:
+    """Check whether a word can be guessed."""
+    
+    return word in get_guessables()
+
+
+def get_word() -> str:
+    """Get a 5 letter word for the game."""
+
+    return choice(get_presentables())
 
 
 def validate_guess(guess: str, word: str) -> List[Hint]:

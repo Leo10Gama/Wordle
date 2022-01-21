@@ -1,6 +1,6 @@
 from collections import defaultdict
 from importlib.machinery import WindowsRegistryFinder
-from typing import List
+from typing import Dict, List
 import wordle_dictionary as wd
 
 
@@ -50,7 +50,7 @@ def weigh_word(word: str) -> float:
     return total
 
 
-def solve_step(entered_word: str, hints: List[wd.Hint], curr_possible: List[str]=None) -> str:
+def solve_step(entered_word: str, hints: List[wd.Hint], curr_possible: Dict[str, float]=None) -> str:
     """Given a word and its hints, return the most likely word it is.
     
     Pre: `entered_word` is lowercase; `len(hints) == 5`
@@ -69,8 +69,7 @@ def solve_step(entered_word: str, hints: List[wd.Hint], curr_possible: List[str]
         elif h == wd.Hint.YELLOW:   # Letter in word but not position; remove words with letter in position and words without letter
             curr_possible = {word : val for (word, val) in curr_possible.items() if word[i] != letter and letter in word}
     # Return the next most likely word
-    print(f"Possible results: {len(curr_possible)}")
-    return max(curr_possible, key=curr_possible.get)
+    return max(curr_possible, key=curr_possible.get), curr_possible
 
 
 def solve_puzzle():
@@ -82,8 +81,8 @@ def solve_puzzle():
     possibles = {word : weigh_word(word) for word in wd.get_guessables()}
     for _ in range(6):
         # Provide guess
-        best_guess = solve_step(best_guess, hints, possibles)
-        print(f"Best guess: {best_guess}")
+        best_guess, possibles = solve_step(best_guess, hints, possibles)
+        print(f"Best guess: {best_guess} (out of {len(possibles)} results)")
         print(f"(Enter to continue)")
         input()
         # Get results of best guess
